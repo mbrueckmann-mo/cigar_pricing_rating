@@ -1,0 +1,108 @@
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+import pyodbc
+from datetime import datetime
+
+# SQL connection
+conn = pyodbc.connect(
+    "Driver={SQL Server};"
+    "Server=VOCBook15;"
+    "Database=Cigar_Pricing_Rating;"
+    "Trusted_Connection=yes;"
+)
+
+cursor = conn.cursor()
+
+BASE_URL = "https://www.famous-smoke.com"
+LISTING_URL = f"{BASE_URL}/cigars"
+
+def scrape_listing_page(url):
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    products = soup.select("YOUR_PRODUCT_CARD_SELECTOR")
+
+    rows = []
+
+    for p in products:
+        cigar_name = p.select_one("YOUR_TITLE_SELECTOR").get_text(strip=True)
+        url = BASE_URL + p.select_one("a")["href"]
+
+        # Additional fields will be extracted from product page
+        rows.append({
+            "cigar_name": cigar_name,
+            "url": url
+        })
+
+    return rows
+
+def scrape_product_page(url):
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    # Extract details here
+    retailer_name = ...
+    brand = ...
+    size_length = ...
+    size_ring_gauge = ...
+    wrapper = ...
+    filler = ...
+    binder = ... 
+    country_of_origin = ...
+    price_per_stick = ...
+    price_bundle = ...
+    bundle_quantity = ...
+    price_box = ...
+    box_quantity = ...
+    stock_status = ...
+    rating = ...
+
+    return {
+        "retailer_name": retailer_name,
+        "brand": brand,
+        "size_length": size_length,
+        "size_ring_gauge": size_ring_gauge,
+        "wrapper": wrapper,
+        "filler": filler,
+        "binder": binder,
+        "country_of_origin": country,
+        "price_single": price_single,
+        "price_bundle": price_bundle,
+        "bundle_quantity": bundle_quantity,
+        "price_box": price_box,
+        "box_quantity": box_quantity,
+        "stock_status": stock_status,
+        "rating": rating
+    }
+
+def save_to_sql(data):
+    cursor.execute("""
+        INSERT INTO dbo.Cigar_Pricing_Rating (
+            retailer_name, cigar_name, brand, size_length, size_ring_gauge,
+            wrapper, filler, binder, country_of_origin, price_single, price_bundle, 
+            bundle_quantity,  price_box, box_quanity, stock_status, rating, url, scrape_date
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+        data["retailer_name"],
+        data["cigar_name"],
+        data["brand"],
+        data["size_length"],
+        data["size_ring_gauge"],
+        data["wrapper"],
+        data["filler"],
+        data["binder"],
+        data["country_of_origin"],
+        data["price_single"],
+        data["price_bundle"],
+        data["bundle_quantity"],
+        data["price_box"],
+        data["box_quanity"],
+        data["stock_status"],
+        data["rating"],
+        data["url"],
+        data["scrape_date"]
+    ))
+
+    conn.commit()
