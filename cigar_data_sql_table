@@ -1,0 +1,28 @@
+create table  Cigar_Pricing_Rating.dbo.cigar_data (
+Cigar_ID int identity (1,1) primary key
+,Retailer_Name varchar (max) not null   --  Online website name where data is extracted from
+,Cigar_Name varchar (max) not null  
+,Brand varchar (max) null 
+,Size_Length decimal (5,2) null
+,Size_Ring_Guage int null
+,Wrapper_Color varchar (max) null
+,Wrapper_Leaf varchar (max) null
+,Wrapper_Country_of_Origin varchar (max) null
+,Filler varchar (max) null
+,Binder varchar (max) null
+,Country_of_Origin varchar (max) null
+,Price_Per_Stick decimal (10,2) null
+,Price_Per_Bundle decimal (10,2) null
+,Bundle_Quantity int null
+,Price_Per_Box decimal (10,2) null
+,Box_Quantity int null
+,Stock_Status varchar (max) null
+,Rating decimal (3,2) null
+,Review_Count int null
+,URL varchar (500) null
+,Scrape_Date date null
+,Strength varchar (max) null
+,Profile varchar (max) null
+,Shape varchar (max) null
+
+) ;
